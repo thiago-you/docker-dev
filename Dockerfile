@@ -81,6 +81,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     default-mysql-client
 
+# RUN docker-php-ext-install mysqli
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install apache, PHP, and supplimentary programs. openssh-server, curl, and lynx-cur are for debugging the container.
@@ -107,7 +109,7 @@ ENV APACHE_PID_FILE /var/run/apache2.pid
 EXPOSE 85
 
 # Copy this repo into place.
-WORKDIR ~/html/docker/
+WORKDIR /home/you/html/docker/
 
 # copy all the files to the container
 COPY . .

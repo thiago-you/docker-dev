@@ -1,0 +1,48 @@
+version: "3.0"
+
+services:
+
+  php:
+    build: './'
+      # context: ./dockerfiles
+    volumes:
+      - ./html:/home/you/html/
+
+  apache:
+    image: 'php:7.4-apache'
+    container_name: php
+    restart: always
+    ports:
+      - "8080:84"
+    depends_on:
+      - php
+      - mysql
+    links:
+      - mysql  
+    volumes:
+      - ./html:/home/you/html/
+      #- ./log:/var/log/apache2
+
+  # apache:
+  #   build: '.'
+  #   depends_on:
+  #     - php
+  #     - mysql
+  #   ports:
+  #     - "8080:80"
+  #   volumes:
+  #     - ./public_html/www/:/home/you/html/
+      #- ./log:/var/log/apache2
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=docker
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    # volumes:
+    #   - "data:/var/lib/mysql"
