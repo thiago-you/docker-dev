@@ -90,13 +90,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 #    apache2 php7.2 php7.2-mysql curl
 
 # Enable apache mods.
-RUN a2enmod php7.4
 RUN a2enmod rewrite
 
 # Update the PHP.ini file, enable <? ?> tags and quieten logging.
-RUN sed -i "s/short_open_tag = Off/short_open_tag = On/" /etc/php/7.4/apache2/php.ini
-RUN sed -i "s/error_reporting = .*$/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING/" /etc/php/7.4/apache2/php.ini
-RUN sed -i "s/display_errors = .*$/display_errors = On/" /etc/php/7.4/apache2/php.ini
+# RUN sed -i "s/short_open_tag = Off/short_open_tag = On/" /etc/php/7.4/apache2/php.ini
+# RUN sed -i "s/error_reporting = .*$/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING/" /etc/php/7.4/apache2/php.ini
+# RUN sed -i "s/display_errors = .*$/display_errors = On/" /etc/php/7.4/apache2/php.ini
 
 # Manually set up the apache environment variables
 ENV APACHE_RUN_USER www-data
@@ -106,10 +105,10 @@ ENV APACHE_LOCK_DIR /var/lock/apache2
 ENV APACHE_PID_FILE /var/run/apache2.pid
 
 # Expose apache.
-EXPOSE 85
+# EXPOSE 80
 
 # Copy this repo into place.
-WORKDIR /home/you/html/docker/
+WORKDIR /var/www/html/docker
 
 # copy all the files to the container
 COPY . .
