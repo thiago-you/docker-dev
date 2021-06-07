@@ -3,23 +3,32 @@ version: "3.0"
 services:
 
   app:
-    build: .
+    build:
+      args:
+        user: cpn
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "89:80"
+    container_name: cpn-app
+    working_dir: /var/www/html
     volumes:
       - ./www:/var/www/html
       - ./log:/var/log/apache2
-
-  mysql:
-    image: mysql:5.7
-    restart: always
     ports:
-      - "3307:3306"
+      - "89:80"
+
+  db:
+    image: mysql:5.7
+    restart: unless-stopped
+    container_name: cpn-db
     environment:
-      - MYSQL_DATABASE=docker
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
-    # volumes:
-    #   - "data:/var/lib/mysql"
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+      #   - "data:/var/lib/mysql"

@@ -2,6 +2,10 @@ FROM php:7.4-apache
 
 LABEL Thiago You <thiago.youx@gmail.com>
 
+# Arguments defined in docker-compose.yml
+ARG user
+ARG uid
+
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -63,27 +67,47 @@ ARG DEPS="\
 
 RUN apt-get update
 
-# install common use pakacges
-RUN apt-get install -y --no-install-recommends \
+# Install common and system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
     apt-utils \
     curl \
     apt-transport-https \
-    openssl
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip
 
 # install MS core font
 RUN sed -i'.bak' 's/$/ contrib/' /etc/apt/sources.list
 RUN apt-get update; apt-get install -y ttf-mscorefonts-installer
 
 # install the MUSTHAVE editor vim
-RUN apt-get install -y --no-install-recommends vim
+# RUN apt-get install -y --no-install-recommends vim
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     default-mysql-client
 
-# RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install mysqli
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create system user to run Composer and Artisan Commands
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user
+
+# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install apache, PHP, and supplimentary programs. openssh-server, curl, and lynx-cur are for debugging the container.
 # RUN apt-get update && apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get -y install \
@@ -104,17 +128,17 @@ ENV APACHE_LOG_DIR /var/log/apache2
 ENV APACHE_LOCK_DIR /var/lock/apache2
 ENV APACHE_PID_FILE /var/run/apache2.pid
 
-# Expose apache.
-# EXPOSE 80
-
-# Copy this repo into place.
-WORKDIR /var/www/html/docker
-
-# copy all the files to the container
-COPY . .
-
 # Update the default apache site with the config we created.
 ADD apache-config.conf /etc/apache2/sites-enabled/000-default.conf
 
 # By default start up apache in the foreground, override with /bin/bash for interative.
 CMD /usr/sbin/apache2ctl -D FOREGROUND
+
+# Set working directory
+WORKDIR /var/www/html
+COPY www/ /var/www/html
+
+USER $user
+
+# Expose apache.
+# EXPOSE 80
