@@ -12,6 +12,25 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Set for all apt-get install, must be at the very beginning of the Dockerfile.
 ENV DEBIAN_FRONTEND noninteractive
 
+RUN apt-get update && apt-get install -y \
+        g++ \
+        zlib1g-dev \ 
+        libicu-dev \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        libxml2-dev \
+        libonig-dev \
+        libmcrypt-dev \
+        libzip-dev \
+        libxslt1-dev
+
+# install external PHP modules before change init dir
+RUN docker-php-ext-install intl && docker-php-ext-configure intl
+RUN docker-php-ext-install mysqli && docker-php-ext-configure mysqli
+RUN docker-php-ext-install zip && docker-php-ext-configure zip
+RUN docker-php-ext-install xsl pdo_mysql bcmath calendar exif gd gettext mysqli pcntl shmop soap sockets sysvmsg sysvsem sysvshm xsl
+
 # PHP_INI_DIR to be symmetrical with official php docker image
 ENV PHP_INI_DIR /etc/php/7.4
 
@@ -59,6 +78,11 @@ ARG DEPS="\
         php7.4-intl \
         php7.4-mysql \
         php7.4-soap  \
+        php7.4-pdo_mysql \
+        php7.4-gettext \
+        php7.4-mysqli \
+        php7.4-pcntl \
+        php7.4-xsl \
         curl \
         ca-certificates \
         runit \
@@ -93,11 +117,6 @@ RUN apt-get update && \
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-# RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
-# RUN docker-php-ext-install pdo_mysql
-# RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
-
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -106,12 +125,6 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user
 
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
-
-# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Install apache, PHP, and supplimentary programs. openssh-server, curl, and lynx-cur are for debugging the container.
-# RUN apt-get update && apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get -y install \
-#    apache2 php7.2 php7.2-mysql curl
 
 # Enable apache mods.
 RUN a2enmod rewrite
