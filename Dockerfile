@@ -41,7 +41,8 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libmcrypt-dev \
     libzip-dev \
-    libxslt1-dev
+    libxslt1-dev \
+    libpcre3-dev
 
 # install external PHP modules before change init dir
 RUN docker-php-ext-install intl && docker-php-ext-configure intl
@@ -176,6 +177,9 @@ ADD apache-config.conf /etc/apache2/sites-enabled/000-default.conf
 
 # By default start up apache in the foreground, override with /bin/bash for interative.
 CMD /usr/sbin/apache2ctl -D FOREGROUND
+
+# copy PHP config
+COPY ./php/php.ini /usr/local/etc/php/
 
 # Set working directory
 WORKDIR /var/www/html
