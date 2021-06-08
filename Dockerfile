@@ -31,6 +31,9 @@ RUN docker-php-ext-install mysqli && docker-php-ext-configure mysqli
 RUN docker-php-ext-install zip && docker-php-ext-configure zip
 RUN docker-php-ext-install xsl pdo_mysql bcmath calendar exif gd gettext mysqli pcntl shmop soap sockets sysvmsg sysvsem sysvshm xsl
 
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
 # PHP_INI_DIR to be symmetrical with official php docker image
 ENV PHP_INI_DIR /etc/php/7.4
 
@@ -140,6 +143,9 @@ RUN a2enmod rewrite
 # ENV APACHE_LOG_DIR /var/log/apache2
 # ENV APACHE_LOCK_DIR /var/lock/apache2
 # ENV APACHE_PID_FILE /var/run/apache2.pid
+
+# RUN echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+# RUN echo "xdebug.remote_host = host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Update the default apache site with the config we created.
 ADD apache-config.conf /etc/apache2/sites-enabled/000-default.conf
