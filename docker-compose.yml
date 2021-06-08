@@ -3,12 +3,7 @@ version: "3.0"
 services:
 
   app:
-    build:
-      args:
-        user: cpn
-        uid: 1000
-      context: ./
-      dockerfile: Dockerfile
+    image: thiagoyou/cpn-php
     restart: unless-stopped
     container_name: cpn-app
     working_dir: /var/www/html
