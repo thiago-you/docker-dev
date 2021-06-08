@@ -12,18 +12,36 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Set for all apt-get install, must be at the very beginning of the Dockerfile.
 ENV DEBIAN_FRONTEND noninteractive
 
+# Create system user to run Composer and Artisan Commands
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user
+
+RUN apt-get update
+
+# Install common and system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    apt-utils \
+    curl \
+    apt-transport-https \
+    zip \
+    unzip
+
+# install required system and php dependencies
 RUN apt-get update && apt-get install -y \
-        g++ \
-        zlib1g-dev \ 
-        libicu-dev \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-        libxml2-dev \
-        libonig-dev \
-        libmcrypt-dev \
-        libzip-dev \
-        libxslt1-dev
+    g++ \
+    zlib1g-dev \ 
+    libicu-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libxml2-dev \
+    libonig-dev \
+    libmcrypt-dev \
+    libzip-dev \
+    libxslt1-dev
 
 # install external PHP modules before change init dir
 RUN docker-php-ext-install intl && docker-php-ext-configure intl
@@ -33,6 +51,32 @@ RUN docker-php-ext-install xsl pdo_mysql bcmath calendar exif gd gettext mysqli 
 
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
+
+# PHP phalcon 4.1.0 env
+ARG PSR_VERSION=1.0.1
+ARG PHALCON_VERSION=4.1.0
+ARG PHALCON_EXT_PATH=php7/64bits
+
+# download and install PHP phalcon 4.1.0
+RUN set -xe && \
+    # Download PSR, see https://github.com/jbboehr/php-psr
+    curl -LO https://github.com/jbboehr/php-psr/archive/v${PSR_VERSION}.tar.gz && \
+    tar xzf ${PWD}/v${PSR_VERSION}.tar.gz && \
+    # Download Phalcon
+    curl -LO https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar.gz && \
+    tar xzf ${PWD}/v${PHALCON_VERSION}.tar.gz && \
+    docker-php-ext-install -j $(getconf _NPROCESSORS_ONLN) \
+        ${PWD}/php-psr-${PSR_VERSION} \
+        ${PWD}/cphalcon-${PHALCON_VERSION}/build/${PHALCON_EXT_PATH} \
+    && \
+    # Remove all temp files
+    rm -r \
+        ${PWD}/v${PSR_VERSION}.tar.gz \
+        ${PWD}/php-psr-${PSR_VERSION} \
+        ${PWD}/v${PHALCON_VERSION}.tar.gz \
+        ${PWD}/cphalcon-${PHALCON_VERSION} \
+    && \
+    php -m
 
 # PHP_INI_DIR to be symmetrical with official php docker image
 ENV PHP_INI_DIR /etc/php/7.4
@@ -92,20 +136,6 @@ ARG DEPS="\
         apache2 \
 "
 
-RUN apt-get update
-
-# Install common and system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    apt-utils \
-    curl \
-    apt-transport-https \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip
-
 # install MS core font
 RUN sed -i'.bak' 's/$/ contrib/' /etc/apt/sources.list
 RUN apt-get update; apt-get install -y ttf-mscorefonts-installer
@@ -122,12 +152,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
 
 # Enable apache mods.
 RUN a2enmod rewrite
