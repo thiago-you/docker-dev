@@ -28,6 +28,8 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
+    ports:
+      - "${DB_PORT}:3306"
     volumes:
       - ./docker-compose/mysql:/docker-entrypoint-initdb.d
       #   - "data:/var/lib/mysql"
