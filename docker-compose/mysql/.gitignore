@@ -1,2 +1,5 @@
 *
 !.gitignore
+!import.example.sh
+!export.example.sh
+!init-databases.example.sql
