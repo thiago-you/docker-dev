@@ -2,6 +2,19 @@ version: "3.0"
 
 services:
 
+  app:
+    image: thiagoyou/cpn-php
+    restart: unless-stopped
+    container_name: cpn-app
+    working_dir: /var/www/html
+    volumes:
+      - ./www:/var/www/html
+      - ./docker-compose/apache/hosts:/etc/hosts
+      - ./docker-compose/apache/sites-available:/etc/apache2/sites-enabled/
+      - ./docker-compose/log:/var/log/apache2
+    ports:
+      - "${APP_PORT}:80"
+
   db:
     image: mysql:5.7
     restart: unless-stopped

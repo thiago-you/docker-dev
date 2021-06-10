@@ -5,3 +5,4 @@
 !init-databases.example.sql
 !data/
 !init/
+!dumps/
