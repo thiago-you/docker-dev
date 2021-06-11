@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM thiagoyou/cpn-php:apache
 
 LABEL Thiago You <thiago.youx@gmail.com>
 
@@ -19,23 +19,12 @@ RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
 # Install common and system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    apt-utils \
-    apt-transport-https \
-    zip \
-    unzip
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     git \
+#     apt-utils \
+#     apt-transport-https \
+#     zip \
+#     unzip
 
-# # Clear cache
+# Clear cache
 # RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Enable apache mods.
-RUN a2enmod rewrite
-
-# By default start up apache in the foreground, override with /bin/bash for interative.
-CMD /usr/sbin/apache2ctl -D FOREGROUND
-
-USER $user
-
-# Explicit Expose apache.
-EXPOSE 80
