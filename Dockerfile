@@ -19,12 +19,24 @@ RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
 # Install common and system dependencies
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     git \
-#     apt-utils \
-#     apt-transport-https \
-#     zip \
-#     unzip
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    apt-utils \
+    apt-transport-https \
+    zip \
+    unzip \
+    vim \
+    nano
 
 # Clear cache
-# RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# copy PHP config
+COPY ./docker-compose/php/php.ini /usr/local/etc/php/
+
+# Set working directory
+WORKDIR /var/www/html
+COPY www/ /var/www/html
+
+# Expose apache.
+EXPOSE 80
