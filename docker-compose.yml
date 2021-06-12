@@ -10,7 +10,7 @@ services:
       context: ./
       dockerfile: Dockerfile
     restart: unless-stopped
-    container_name: cpn-app2
+    container_name: cpn-app
     working_dir: /var/www/html
     volumes:
       - ./www:/var/www/html
