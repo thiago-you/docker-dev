@@ -38,5 +38,9 @@ COPY ./docker-compose/php/php.ini /usr/local/etc/php/
 WORKDIR /var/www/html
 COPY www/ /var/www/html
 
+# set php session permission
+RUN mkdir -p /var/lib/php/sessions && \
+    chown -R www-data:www-data /var/lib/php/sessions
+
 # Expose apache.
 EXPOSE 80
