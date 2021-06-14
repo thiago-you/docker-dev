@@ -42,5 +42,8 @@ COPY www/ /var/www/html
 RUN mkdir -p /var/lib/php/sessions && \
     chown -R www-data:www-data /var/lib/php/sessions
 
+# uncoment php extension from mime.types
+RUN sed -i '/x-httpd-php/s/^#//g' /etc/mime.types
+
 # Expose apache.
 EXPOSE 80
