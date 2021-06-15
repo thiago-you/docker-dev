@@ -5,7 +5,7 @@ services:
   app:
     build:
       args:
-        user: cpn
+        user: ${APP_USER}
         uid: 1000
       context: ./
       dockerfile: Dockerfile
@@ -13,7 +13,7 @@ services:
     container_name: cpn-app
     working_dir: /var/www/html
     volumes:
-      - ./www:/var/www/html
+      - ${APP_DIR}:/var/www/html
       - ./docker-compose/apache/sites-available:/etc/apache2/sites-enabled/
       - ./docker-compose/apache/hosts:/etc/hosts
       - ./docker-compose/log:/var/log/apache2
