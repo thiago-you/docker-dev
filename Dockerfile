@@ -28,6 +28,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     nano
 
+# Install nodejs with angular
+RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm && \
+    npm cache clean -f && npm uninstall -g npm && npm install \ 
+    -g npm@latest \
+    -g bower \
+    -g @angular/cli
+
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
