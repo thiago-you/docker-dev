@@ -10,7 +10,7 @@ services:
       context: ./
       dockerfile: Dockerfile
     restart: unless-stopped
-    container_name: cpn-app
+    container_name: app-env
     working_dir: /var/www/html
     volumes:
       - ${APP_DIR}:/var/www/html
@@ -25,7 +25,7 @@ services:
   db:
     image: mysql:5.7
     restart: unless-stopped
-    container_name: cpn-db
+    container_name: app-db
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
