@@ -24,3 +24,6 @@
 - sudo useradd -u 999 mysql
 
 ### ATENÇÂO: no arquivo .env o user e o password não podem utilizar o valor "root"
+
+### Utilize este comando para exibir logs de error
+- docker logs --tail 50 --follow --timestamps cpn-db
