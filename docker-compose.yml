@@ -11,7 +11,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     container_name: cpn-app
-    network_mode: ${APP_NETWORK}
+    networks:
+      - app-network
     working_dir: /var/www/html
     volumes:
       - ${APP_DIR}:/var/www/html
@@ -28,6 +29,8 @@ services:
     restart: unless-stopped
     container_name: cpn-db
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - app-network
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_PASSWORD: ${DB_PASSWORD}
@@ -39,3 +42,7 @@ services:
     volumes:
       - ./docker-compose/mysql/data:/var/lib/mysql
       - ./docker-compose/mysql/init:/docker-entrypoint-initdb.d
+
+networks: 
+  app-network:
+    driver: bridge
