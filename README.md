@@ -47,3 +47,5 @@ Agora basta testar os comandos PHP:
 - php -v
 
 ### Atenção: o network mode "host" não funciona no WSL, sendo então necessário rodar com o modo default "bridge".
+
+### Atenção: no WSL do windows também é necessário adicionar os sites locais no /etc/hosts do windows (C:\Windows\system32\drives\etc\hosts).
