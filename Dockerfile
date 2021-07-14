@@ -45,5 +45,8 @@ RUN mkdir -p /var/lib/php/sessions && \
 # uncoment php extension from mime.types
 RUN sed -i '/x-httpd-php/s/^#//g' /etc/mime.types
 
-# Expose apache.
+# Expose apache2 port
 EXPOSE 80
+
+# Expose angular serve port
+EXPOSE 4200
