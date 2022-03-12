@@ -22,9 +22,11 @@ services:
     ports:
       - "${APP_PORT}:80"
       - "4200:4200"
+      - "3000:3000"
     expose: 
       - 80
       - 4200
+      - 3000
 
   db:
     image: mysql:5.7

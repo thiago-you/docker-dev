@@ -50,3 +50,6 @@ EXPOSE 80
 
 # Expose angular serve port
 EXPOSE 4200
+
+# Expose node server port
+EXPOSE 3000
