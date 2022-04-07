@@ -2,7 +2,7 @@
 # and create and grant permissions to default user
 
 # create databases
-CREATE DATABASE IF NOT EXISTS `database`;
+# CREATE DATABASE IF NOT EXISTS `database`;
 
 # create all mysql users
 CREATE USER 'cpn'@'localhost' IDENTIFIED BY 'cpn#2010';
