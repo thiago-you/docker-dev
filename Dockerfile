@@ -28,8 +28,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     nano
 
+# install Apache Kafka extension
+RUN apt-get install -y librdkafka-dev
+RUN apt-get install -y librdkafka-dev
+RUN pecl install channel://pecl.php.net/rdkafka-beta
+RUN rm -rf /tmp/pear
+
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/install-php-extensions && \
+    install-php-extensions psr
+
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# add kafka extension on conf.d
+RUN echo "extension=rdkafka.so" > /usr/local/etc/php/conf.d/rdkafka.ini
 
 # copy PHP config
 COPY ./docker-compose/php/php.ini /usr/local/etc/php/

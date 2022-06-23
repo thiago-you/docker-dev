@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
     container_name: cpn-app
     networks:
-      - app-network
+      - kafka-network
     working_dir: /var/www/html
     volumes:
       - ${APP_DIR}:/var/www/html
@@ -34,7 +34,7 @@ services:
     container_name: cpn-db
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=""
     networks:
-      - app-network
+      - kafka-network
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_PASSWORD: ${DB_PASSWORD}
@@ -48,5 +48,5 @@ services:
       - ./docker-compose/mysql/init:/docker-entrypoint-initdb.d
 
 networks: 
-  app-network:
-    driver: bridge
+  kafka-network:
+    name: kafka-network
