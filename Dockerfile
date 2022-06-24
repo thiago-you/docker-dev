@@ -39,6 +39,16 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions && \
     install-php-extensions psr
 
+# Install memcached
+RUN set -ex \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y libmemcached-dev \
+    && MEMCACHED="`mktemp -d`" \
+    && curl -skL https://github.com/php-memcached-dev/php-memcached/archive/master.tar.gz | tar zxf - --strip-components 1 -C $MEMCACHED \
+    && docker-php-ext-configure $MEMCACHED \
+    && docker-php-ext-install $MEMCACHED \
+    && rm -rf $MEMCACHED
+
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -50,7 +60,8 @@ COPY ./docker-compose/php/php.ini /usr/local/etc/php/
 
 # Set working directory
 WORKDIR /var/www/html
-COPY www/ /var/www/html
+
+#COPY www/ /var/www/html
 
 # set php session permission
 RUN mkdir -p /var/lib/php/sessions && \
