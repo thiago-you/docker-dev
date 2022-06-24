@@ -27,6 +27,8 @@ services:
       - 80
       - 4200
       - 3000
+    links:
+      - memcached
 
   db:
     image: mysql:5.7
@@ -46,6 +48,14 @@ services:
     volumes:
       - ./docker-compose/mysql/data:/var/lib/mysql
       - ./docker-compose/mysql/init:/docker-entrypoint-initdb.d
+
+  memcached:
+    container_name: memcached
+    image: memcached:latest
+    networks:
+      - kafka-network
+    ports:
+        - "11211:11211"
 
 networks: 
   kafka-network:
