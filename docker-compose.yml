@@ -11,8 +11,6 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     container_name: cpn-app
-    networks:
-      - kafka-network
     working_dir: /var/www/html
     volumes:
       - ${APP_DIR}:/var/www/html
@@ -35,8 +33,6 @@ services:
     restart: unless-stopped
     container_name: cpn-db
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=""
-    networks:
-      - kafka-network
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_PASSWORD: ${DB_PASSWORD}
@@ -52,11 +48,10 @@ services:
   memcached:
     container_name: memcached
     image: memcached:latest
-    networks:
-      - kafka-network
     ports:
         - "11211:11211"
 
-networks: 
-  kafka-network:
-    name: kafka-network
+networks:
+  default:
+    external:
+      name: ${NETWORK}
