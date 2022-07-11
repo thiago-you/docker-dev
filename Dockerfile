@@ -1,4 +1,4 @@
-FROM thiagoyou/cpn-php:apache
+FROM thiagoyou/cpn-php-kafka:latest
 
 LABEL Thiago You <thiago.youx@gmail.com>
 
@@ -27,33 +27,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     vim \
     nano
-
-# install Apache Kafka extension
-RUN apt-get install -y librdkafka-dev
-RUN apt-get install -y librdkafka-dev
-RUN pecl install channel://pecl.php.net/rdkafka-beta
-RUN rm -rf /tmp/pear
-
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-
-RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions psr
-
-# Install memcached
-RUN set -ex \
-    && apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y libmemcached-dev \
-    && MEMCACHED="`mktemp -d`" \
-    && curl -skL https://github.com/php-memcached-dev/php-memcached/archive/master.tar.gz | tar zxf - --strip-components 1 -C $MEMCACHED \
-    && docker-php-ext-configure $MEMCACHED \
-    && docker-php-ext-install $MEMCACHED \
-    && rm -rf $MEMCACHED
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# add kafka extension on conf.d
-RUN echo "extension=rdkafka.so" > /usr/local/etc/php/conf.d/rdkafka.ini
 
 # copy PHP config
 COPY ./docker-compose/php/php.ini /usr/local/etc/php/
