@@ -28,6 +28,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     nano
 
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # copy PHP config
 COPY ./docker-compose/php/php.ini /usr/local/etc/php/
 
