@@ -1,0 +1,5 @@
+*
+!.gitignore
+!php.ini.example
+!extensions/
+!extensions/*

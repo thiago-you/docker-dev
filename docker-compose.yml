@@ -10,17 +10,21 @@ services:
       context: ./
       dockerfile: Dockerfile
     restart: unless-stopped
-    container_name: cpn-app
+    container_name: dev-app
     networks:
       - app-network
     working_dir: /var/www/html
     volumes:
       - ${APP_DIR}:/var/www/html
-      - ./docker-compose/apache/sites-available:/etc/apache2/sites-enabled/
-      - ./docker-compose/apache/hosts:/etc/hosts
-      - ./docker-compose/log:/var/log/apache2
+      - ./shared:/shared
+      - ./data/apache/sites-enabled:/etc/apache2/sites-enabled/
+      - ./data/apache/hosts:/etc/hosts
+      - ./data/log:/var/log/apache2
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     ports:
       - "${APP_PORT}:80"
+      - "443:443"
       - "4200:4200"
       - "3000:3000"
     expose: 
@@ -31,7 +35,7 @@ services:
   db:
     image: mysql:5.7
     restart: unless-stopped
-    container_name: cpn-db
+    container_name: dev-db
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=""
     networks:
       - app-network
@@ -44,8 +48,11 @@ services:
     ports:
       - "${DB_PORT}:3306"
     volumes:
-      - ./docker-compose/mysql/data:/var/lib/mysql
-      - ./docker-compose/mysql/init:/docker-entrypoint-initdb.d
+      - ./shared:/shared
+      - ./data/mysql/content:/var/lib/mysql
+      - ./data/mysql/init:/docker-entrypoint-initdb.d
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
 
 networks: 
   app-network:

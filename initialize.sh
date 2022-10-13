@@ -6,31 +6,36 @@ if [ ! -f '.env' ]; then
 fi
 
 # copy hosts if not exist
-if [ ! -f 'docker-compose/apache/hosts' ]; then
-    cp docker-compose/apache/hosts.example docker-compose/apache/hosts
+if [ ! -f 'data/apache/hosts' ]; then
+    cp data/apache/hosts.example data/apache/hosts
 fi
 
 # copy php.ini if not exist
-if [ ! -f 'docker-compose/php/php.ini' ]; then
-    cp docker-compose/php/php.ini.example docker-compose/php/php.ini
+if [ ! -f 'data/php/php.ini' ]; then
+    cp data/php/php.ini.example data/php/php.ini
 fi
 
 # copy script to init database and users if not exist
-if [ ! -f 'docker-compose/mysql/init/01-init-databases.sql' ]; then
-    cp docker-compose/mysql/init-databases.example.sql docker-compose/mysql/init/01-init-databases.sql
+if [ ! -f 'data/mysql/init/01-init-databases.sql' ]; then
+    cp data/mysql/init-databases.example.sql data/mysql/init/01-init-databases.sql
 fi
 
 # copy script to export database if not exist
-if [ ! -f 'docker-compose/mysql/export.sh' ]; then
-    cp docker-compose/mysql/export.example.sh docker-compose/mysql/export.sh
+if [ ! -f 'data/mysql/export.sh' ]; then
+    cp data/mysql/export.example.sh data/mysql/export.sh
 fi
 
 # copy script to import database if not exist
-if [ ! -f 'docker-compose/mysql/import.sh' ]; then
-    cp docker-compose/mysql/import.example.sh docker-compose/mysql/import.sh
+if [ ! -f 'data/mysql/import.sh' ]; then
+    cp data/mysql/import.example.sh data/mysql/import.sh
 fi
 
-# copi virtual hosts if not exist
-cp docker-compose/apache/sites-default/* docker-compose/apache/sites-available/
+# copy virtual hosts if not exist
+cp data/apache/sites-default/* data/apache/sites-enabled/
+
+# copy index to html if not exist
+if [ ! -f '/var/www/html/index.php' ]; then
+    cp data/apache/index.php /var/www/html/index.php
+fi
 
 echo 'Arquivos de configuração inicialiazados!'

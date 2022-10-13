@@ -13,9 +13,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV DEBIAN_FRONTEND noninteractive
 
 # Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-
-RUN mkdir -p /home/$user/.composer && \
+RUN useradd -G www-data,root -u $uid -d /home/$user $user && \
+    mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
 # Install common and system dependencies
@@ -26,27 +25,55 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zip \
     unzip \
     vim \
-    nano
+    nano \
+    wkhtmltopdf
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # copy PHP config
-COPY ./docker-compose/php/php.ini /usr/local/etc/php/
+COPY ./data/php/php.ini /usr/local/etc/php/
+
+# copy PHP Source Guardian extension
+COPY ./data/php/extensions/ixed.7.4.lin /usr/local/lib/php/extensions/no-debug-non-zts-20190902
 
 # Set working directory
 WORKDIR /var/www/html
-COPY www/ /var/www/html
 
-# set php session permission
+# set php session permission, uncoment php extension from mime.types
+# and enable apache2 SSL
 RUN mkdir -p /var/lib/php/sessions && \
-    chown -R www-data:www-data /var/lib/php/sessions
+    chown -R www-data:www-data /var/lib/php/sessions && \
+    sed -i '/x-httpd-php/s/^#//g' /etc/mime.types && \
+    a2enmod ssl 
 
-# uncoment php extension from mime.types
-RUN sed -i '/x-httpd-php/s/^#//g' /etc/mime.types
+# add aliases into bash
+RUN echo "# bash aliases" >> ~/.bashrc && \
+    echo "alias ll='ls -alF'" >> ~/.bashrc && \
+    echo "alias la='ls -A'" >> ~/.bashrc && \
+    echo "alias l='ls -CF'" >> ~/.bashrc && \
+    echo "alias lt='du -sh * | sort -h'" >> ~/.bashrc && \
+    echo "alias size='du -sh'" >> ~/.bashrc && \
+    echo "alias left='ls -t -1'" >> ~/.bashrc && \
+    echo "alias count='find . -type f | wc -l'" >> ~/.bashrc && \
+    echo "alias untar='tar -zxvf'" >> ~/.bashrc && \
+    echo "alias wget='wget -c'" >> ~/.bashrc && \
+    echo "alias .html='cd /var/www/html'" >> ~/.bashrc && \
+    echo "alias .sites='cd /etc/apache2/sites-enabled'" >> ~/.bashrc && \
+    echo "alias .php='cd /usr/local/etc/php/'" >> ~/.bashrc && \
+    echo "alias ...='cd ../../../'" >> ~/.bashrc && \
+    echo "alias ....='cd ../../../../'" >> ~/.bashrc && \
+    echo "alias .3='cd ../../../'" >> ~/.bashrc && \
+    echo "alias .4='cd ../../../../'" >> ~/.bashrc && \
+    echo "alias .5='cd ../../../../../'" >> ~/.bashrc && \
+    echo "alias rm='rm -I --preserve-root'" >> ~/.bashrc && \
+    echo "alias sudo=''" >> ~/.bashrc
 
 # Expose apache2 port
 EXPOSE 80
+
+# Expose apache2 SSL port
+EXPOSE 443
 
 # Expose angular serve port
 EXPOSE 4200

@@ -3,6 +3,6 @@
 !import.example.sh
 !export.example.sh
 !init-databases.example.sql
-!data/
+!content/
 !init/
 !dumps/
