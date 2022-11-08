@@ -11,6 +11,10 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     container_name: dev-app
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+
+
     networks:
       - app-network
     working_dir: /var/www/html
@@ -31,12 +35,18 @@ services:
       - 80
       - 4200
       - 3000
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 4G
+          cpus: "2.0"
 
   db:
     image: mysql:5.7
     restart: unless-stopped
     container_name: dev-db
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=""
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --lower_case_table_names=1 --sql_mode=""
     networks:
       - app-network
     environment:
