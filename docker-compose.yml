@@ -13,8 +13,6 @@ services:
     container_name: dev-app
     extra_hosts:
         - "host.docker.internal:host-gateway"
-
-
     networks:
       - app-network
     working_dir: /var/www/html
