@@ -37,21 +37,13 @@ Para realizar a configuração do ambiente execute o arquivo de inicialização:
 sh initialize.sh
 ```
 
-Se necessário, altere as variáveis de ambiente no arquivo ".env".
+### Criando volume
 
+Use o comando abaixo para criar um volume externo de dados compartilhados no docker. Assim todos os dados de database do MySQL serão armazenados separadamente dos containers, evitando a perca de dados quando trabalhando com os containers.
+
+```shell
+docker volume create --name=mysql-data
 ```
-APP_USER=cpn
-APP_DIR=/var/www/html
-APP_PORT=80
-
-DB_CONNECTION=mysql
-DB_HOST=cpn-db
-DB_PORT=3306
-DB_USERNAME=cpn
-DB_PASSWORD=cpn
-```
-
-**Atenção:** no arquivo .env o user e o password não podem utilizar o valor "root"
 
 ### Build dos Containers
 

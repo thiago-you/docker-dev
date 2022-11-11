@@ -56,11 +56,16 @@ services:
     ports:
       - "${DB_PORT}:3306"
     volumes:
-      - ${DB_DIR}:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
       - ./shared:/shared
       - ./data/mysql/init:/docker-entrypoint-initdb.d
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+
+volumes:
+  mysql-data:
+    external: true
+    name: mysql-data
 
 networks: 
   app-network:
