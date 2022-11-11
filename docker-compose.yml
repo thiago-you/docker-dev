@@ -32,7 +32,7 @@ services:
     image: mysql:5.7
     restart: unless-stopped
     container_name: cpn-db
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=""
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode="" --connect_timeout=180 --interactive_timeout=180 --wait_timeout=180
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_PASSWORD: ${DB_PASSWORD}
