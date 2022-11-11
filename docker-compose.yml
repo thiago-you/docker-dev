@@ -57,8 +57,8 @@ services:
       - "${DB_PORT}:3306"
     volumes:
       - ./shared:/shared
-      - ./data/mysql/content:/var/lib/mysql
       - ./data/mysql/init:/docker-entrypoint-initdb.d
+      - ${DB_DIR}:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
 
