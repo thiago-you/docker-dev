@@ -44,7 +44,7 @@ services:
     image: mysql:5.7
     restart: unless-stopped
     container_name: dev-db
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=""  --lower_case_table_names=1 --connect_timeout=180 --interactive_timeout=180 --wait_timeout=180
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode="" --lower_case_table_names=1 --connect_timeout=180 --interactive_timeout=180 --wait_timeout=180
     networks:
       - app-network
     environment:
