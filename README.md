@@ -23,10 +23,16 @@ sudo sh deploy.sh
 
 ### Install Docker
 
-```
-sudo apt update
-sudo apt install docker docker-compose
+```shell
+sudo apt update && sudo apt install -y docker
 sudo apt autoremove
+```
+
+### Install Docker-Compose
+
+```shell
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 ### Configuração do Ambiente
@@ -51,6 +57,8 @@ docker volume create --name=mysql-data
 sudo docker-compose build
 ```
 
+**Obs.:** Não é necessário realizar o build quando estiver utilizando apenas imagens.
+
 ### Rodando os Containers
 
 Antes de rodar os containers, pare os serviços de Apache e MySQL (se existirem):
@@ -73,14 +81,14 @@ docker-compose up -d db
 
 ### Conectando em um Container
 ```
-docker exec -it cpn-app bash
+docker exec -it dev-app bash
 ```
 
 ### Executar Migration
 Para executar a migration é necessário conectar no container da aplicação e então executar o comando normalmente:
 
 ```
-docker exec -it cpn-app bash
+docker exec -it dev-app bash
 cd project
 vendor/bin/phinx migrate
 ```
@@ -88,13 +96,13 @@ vendor/bin/phinx migrate
 Também é possível executar o comando de fora do container:
 
 ```
-docker exec cpn-app ./project/vendor/bin/phinx migrate --configuration project/phinx.php
+docker exec dev-app ./project/vendor/bin/phinx migrate --configuration project/phinx.php
 ```
 
 Também podemos criar um script que execute este comando (dentro do container):
 
 ```
-docker exec -it cpn-app bash
+docker exec -it dev-app bash
 
 echo “./project/vendor/bin/phinx migrate --configuration project/phinx.php” >> /var/www/html/migrate.sh
 sudo chmod +x migrate.sh
@@ -103,23 +111,23 @@ sudo chmod +x migrate.sh
 Após isso, podemos simplesmente executar esse script dentro do nosso container:
 
 ```
-docker exec cpn-app ./migrate.sh
+docker exec dev-app ./migrate.sh
 ```
 
 ### Criando Usuário do MySQL
 Em alguns casos também é recomendado criar um usuário para o serviço de MySql, caso já não exista:
 
 ```
-# deleta o usuario mysql
+# deleta o usuário mysql
 sudo userdel mysql
 
-# adiciona o usuario mysql
+# adiciona o usuário mysql
 sudo useradd -u 999 mysql
 ```
 
 ### Logs de Erro do Container
 ```
-docker logs --tail 50 --follow --timestamps cpn-app
+docker logs --tail 50 --follow --timestamps dev-app
 ```
 
 ### Adicionando um ambiente/extensão PHP

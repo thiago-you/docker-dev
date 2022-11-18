@@ -3,12 +3,7 @@ version: "3.0"
 services:
 
   app:
-    build:
-      args:
-        user: ${APP_USER}
-        uid: 1000
-      context: ./
-      dockerfile: Dockerfile
+    image: thiagoyou/env-dev:php
     restart: unless-stopped
     container_name: dev-app
     extra_hosts:

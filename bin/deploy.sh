@@ -6,7 +6,8 @@ echo '-------------------------------------------------------'
 echo 'Inicializando configuração do ambiente...'
 
 # inicializa as cofiguracoes do ambiente
-sh initialize.sh
+sh bin/initialize.sh
+
 echo '-------------------------------------------------------\n'
 
 # install docker
@@ -16,10 +17,9 @@ APT_UPDATED=false
 DOCKER="docker"
 DOCKER_COMPOSE="docker-compose"
 
-DOCKER_PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $DOCKER|grep "install ok installed")
-DOCKER_COMPOSE_PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $DOCKER_COMPOSE|grep "install ok installed")
-
 echo "Verificando $DOCKER..."
+
+DOCKER_PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $DOCKER | grep "install ok installed")
 
 if [ "" = "$DOCKER_PKG_OK" ]; then
   if [! $APT_UPDATED ]; then
@@ -28,7 +28,7 @@ if [ "" = "$DOCKER_PKG_OK" ]; then
     echo '\n'
   fi
 
-  echo "$DOCKER não instalado. Instalando $DOCKER..."
+  echo "$DOCKER não instalado. Instalando $DOCKER...\n"
   sudo apt-get --yes install $DOCKER
 
   echo '\n-------------------------------------------------------'
@@ -41,14 +41,14 @@ echo '-------------------------------------------------------'
 echo '\n-------------------------------------------------------'
 echo "Verificando $DOCKER_COMPOSE..."
 
-if [ "" = "$DOCKER_COMPOSE_PKG_OK" ]; then
-  if [! $APT_UPDATED ]; then
+if [ ! -f "/usr/local/bin/docker-compose" ]; then
+  if [ ! $APT_UPDATED ]; then
     APT_UPDATED=true
     sudo apt update -y
     echo '\n'
   fi
 
-  echo "$DOCKER_COMPOSE não instalado. Instalando $DOCKER_COMPOSE..."
+  echo "$DOCKER_COMPOSE não instalado. Instalando $DOCKER_COMPOSE...\n"
 
   sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   sudo chmod +x /usr/local/bin/docker-compose
@@ -104,24 +104,24 @@ echo 'Subindo ambiente docker...\n'
 sudo docker-compose build -q
 docker-compose up -d 2>/dev/null
 
-DEV_APP='dev-app'
-DEV_DB='dev-db'
+CPN_APP='cpn-app'
+CPN_DB='cpn-db'
 
-if [ "$(docker ps -q -f name=$DEV_APP)" ]; then
-  if [ "$(docker ps -aq -f status=exited -f name=$DEV_APP)" ]; then
-    echo "O container $DEV_APP não está rodando!"
+if [ "$(docker ps -q -f name=$CPN_APP)" ]; then
+  if [ "$(docker ps -aq -f status=exited -f name=$CPN_APP)" ]; then
+    echo "O container $CPN_APP não está rodando!"
   else
-    echo "O container $DEV_APP está rodando..."
+    echo "O container $CPN_APP está rodando..."
   fi
 fi
 
-if [ "$(docker ps -q -f name=$DEV_DB)" ]; then
-  if [ "$(docker ps -aq -f status=exited -f name=$DEV_DB)" ]; then
-    echo "O container $DEV_DB não está rodando!"
+if [ "$(docker ps -q -f name=$CPN_DB)" ]; then
+  if [ "$(docker ps -aq -f status=exited -f name=$CPN_DB)" ]; then
+    echo "O container $CPN_DB não está rodando!"
   else
-    echo "O container $DEV_DB está rodando..."
+    echo "O container $CPN_DB está rodando..."
   fi
 fi
 
 echo '\nAmbiente docker está rodando!'
-echo '-------------------------------------------------------'
+echo '-------------------------------------------------------\n'
